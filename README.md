@@ -68,7 +68,7 @@ cd client
 npm start
 
 
-The app should now be running locally, accessible at http://localhost:3000.
+The app should now be running locally, accessible at http://localhost:4000.
 
 Usage
 
