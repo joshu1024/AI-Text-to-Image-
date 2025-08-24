@@ -105,7 +105,6 @@ Demo
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ddb5320b-79ae-42f3-a0f9-368766e615a6" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ae08458b-73b2-4bd9-9e3e-e29fe72c1a81" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/dee35df3-f22b-4213-be73-60f25819d01e" />
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/2face2d8-df34-4756-8e06-1ee6df7ef21f" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3c58718c-0578-494c-b422-689d99ba3221" />
 
 🤝 Contributing
