@@ -1,40 +1,50 @@
-AI-Text-to-Image
+# AI-Text-to-Image
 
-A full-stack web application built with the MERN stack (MongoDB, Express.js, React.js, Node.js) that allows users to generate AI-based images from text prompts. Features include JWT authentication, credit-based generation, and PayPal integration for purchasing credits.
+A full-stack web application built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js) that allows users to generate AI-based images from text prompts. Features include JWT authentication, a credit-based image generation system, and PayPal integration for purchasing credits.
 
-Features
+🔗 **Live Demo**: [ai-text-to-image-six.vercel.app](https://ai-text-to-image-six.vercel.app)
 
-User authentication with JWT
+---
 
-Generate AI images based on text prompts
+## ✨ Features
 
-Credit-based image generation system
+- 🔐 User authentication with JWT
+- 🧠 Generate AI images based on text prompts
+- 💳 Credit-based image generation system
+- 🛒 PayPal integration for buying credits
+- 🏗️ Full-stack architecture (React frontend & Node.js backend)
+- 🗃️ MongoDB for data storage
 
-PayPal integration for buying credits
+---
 
-Full-stack architecture with React frontend and Node.js backend
+## 🧰 Tech Stack
 
-MongoDB for data storage
+- **Frontend**: React.js, CSS
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB
+- **Authentication**: JWT
+- **Payments**: PayPal REST API
+- **Hosting**: Render (frontend), Render/other (backend)
 
-Getting Started
-Prerequisites
+---
 
-Node.js and npm installed
+## 🚀 Getting Started
 
-MongoDB database (local or cloud)
+### Prerequisites
 
-PayPal developer account (for API credentials)
+- Node.js and npm installed
+- MongoDB instance (local or cloud, e.g. MongoDB Atlas)
+- PayPal Developer Account (for API credentials)
 
-Installation
+---
 
-Clone the repository:
+### 📦 Installation
 
-git clone https://github.com/joshu1024/AI-Text-to-Image-.git
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/joshu1024/AI-Text-to-Image-.git
+   cd AI-Text-to-Image-
 
-
-Navigate to the project directory:
-
-cd AI-Text-to-Image-
 
 
 Install server dependencies:
@@ -86,10 +96,29 @@ AI-Text-to-Image-
 ├── server          # Express backend code
 └── .gitignore      # Git ignore rules
 
-Contributing
+Demo
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7d61b180-56bf-46a0-8e36-ef66b18de3f0" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/fd119937-79a3-480c-8d78-e0e7eed13d7b" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/787a84af-146b-40a2-a8d2-453075155fac" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/be39eb1b-8f0c-4b87-81a6-f981e8fda62a" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/156be774-8757-46ff-9982-f2fa7cf8181d" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ddb5320b-79ae-42f3-a0f9-368766e615a6" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ae08458b-73b2-4bd9-9e3e-e29fe72c1a81" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/dee35df3-f22b-4213-be73-60f25819d01e" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/2face2d8-df34-4756-8e06-1ee6df7ef21f" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3c58718c-0578-494c-b422-689d99ba3221" />
 
-Feel free to fork the project and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
+🤝 Contributing
 
-License
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-This project is licensed under the MIT License.
+📄 License
+
+This project is licensed under the MIT License
+.
+
+📌 Author
+
+Built by @joshu1024
+ 🚀
+
