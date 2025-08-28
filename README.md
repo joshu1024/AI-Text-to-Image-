@@ -2,7 +2,7 @@
 
 A full-stack web application built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js) that allows users to generate AI-based images from text prompts. Features include JWT authentication, a credit-based image generation system, and PayPal integration for purchasing credits.
 
-🔗 **Live Demo**: [ai-text-to-image-six.vercel.app](ai-text-to-image-six.vercel.app)
+🔗 **Live Demo**: [ai-text-to-image-six.vercel.app](ai-text-to-image-six.vercel.app/)
 
 ---
 
