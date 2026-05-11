@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CompletePayment = () => {
   const navigate = useNavigate();
-  setTimeout(() => {
-    navigate("/result");
-  }, 5000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/result");
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [navigate]);
   return (
     <div className="flex justify-center items-center text-center  my-30 ">
       <h2 className="max-w-lg font-medium text-3xl mb-4 pl-20 ">

@@ -5,12 +5,20 @@ import userRouter from "./routes/userRoutes.js";
 import imageRouter from "./routes/imageRouter.js";
 import paypalRoutes from "./routes/paypal.js";
 import cors from "cors";
-
+import rateLimit from "express-rate-limit";
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many attempts, please try again later" },
+});
+
+app.use("/api/user/login", authLimiter);
+app.use("/api/user/register", authLimiter);
 
 app.use("/api/user", userRouter);
 app.use("/api/image", imageRouter);

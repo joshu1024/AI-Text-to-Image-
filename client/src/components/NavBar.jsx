@@ -48,7 +48,7 @@ const NavBar = () => {
               Pricing
             </p>{" "}
             <button
-              onClick={() => setShowLogin("true")}
+              onClick={() => setShowLogin(true)}
               className="bg-zinc-800 text-white text-sm px-7 sm:px-10 rounded-full py-2"
             >
               Get started

@@ -83,7 +83,7 @@ const BuyCredit = () => {
                                 userId: user._id,
                                 plan: item.id.toLowerCase(),
                               }),
-                            }
+                            },
                           );
 
                           if (!response.ok)
@@ -98,7 +98,7 @@ const BuyCredit = () => {
                   ) : (
                     <button
                       className="w-full bg-gray-800 text-white mt-8 text-sm rounded-md py-2.5"
-                      onClick={() => setShowLogin("true")}
+                      onClick={() => setShowLogin(true)}
                     >
                       Get Started
                     </button>

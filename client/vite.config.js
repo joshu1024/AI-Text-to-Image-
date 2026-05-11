@@ -11,4 +11,5 @@ export default defineConfig({
       "/paypal": "http://localhost:4000",
     },
   },
+  base: process.env.VITE_BASE_PATH || "/",
 });

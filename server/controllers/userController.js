@@ -7,8 +7,15 @@ export const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!email || !password || !name) {
-      res.json({ message: "kindly provide the details", success: false });
+      res
+        .status(400)
+        .json({ message: "kindly provide the details", success: false });
     }
+    const existing = await userModel.findOne({ email });
+    if (existing)
+      return res
+        .status(409)
+        .json({ success: false, message: "Email already in use" });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -22,11 +29,13 @@ export const registerUser = async (req, res) => {
     const newUser = new userModel(userData);
     const user = await newUser.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
 
     res.json({ success: true, token, user: { name: user.name } });
   } catch (error) {
-    res.status(200).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -35,13 +44,17 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
     if (!user) {
-      res.status(404).json({ message: "user not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "user not found", success: false });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
 
       res.status(200).json({ success: true, token, user: { name: user.name } });
     } else {
@@ -56,7 +69,7 @@ export const loginUser = async (req, res) => {
 
 export const userCredits = async (req, res) => {
   try {
-    const user = await userModel.findById(req.userId); // ✅ use req.userId, not body
+    const user = await userModel.findById(req.userId);
 
     if (!user) {
       return res

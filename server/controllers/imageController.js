@@ -1,7 +1,6 @@
 import userModel from "../models/userModel.js";
 import FormData from "form-data";
 import axios from "axios";
-import { response } from "express";
 
 export const generateImage = async (req, res) => {
   try {
@@ -9,9 +8,9 @@ export const generateImage = async (req, res) => {
 
     const user = await userModel.findById(req.userId);
     if (!user || !prompt) {
-      return res.json({ success: false, message: "No imputs provided" });
+      return res.json({ success: false, message: "No inputs provided" });
     }
-    if (user.creditBalance === 0 || user.creditBalance < 0) {
+    if (user.creditBalance === 0 || user.creditBalance <= 0) {
       return res.json({
         success: false,
         creditBalance: user.creditBalance,
@@ -30,7 +29,7 @@ export const generateImage = async (req, res) => {
           "x-api-key": process.env.CLIPDROP_API,
         },
         responseType: "arraybuffer", // lowercase 'b'
-      }
+      },
     );
     //1:06:10
     const base64Image = Buffer.from(data, "binary").toString("base64");

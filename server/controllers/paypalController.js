@@ -1,43 +1,126 @@
-import express from "express";
+import plans from "../plans/plans.js";
 import axios from "axios";
-import authUser from "../middleware/auth.js";
-import userModel from "../models/userModel.js";
 
-const plans = {
-  Basic: { price: 10, credits: 100 },
-  Advanced: { price: 50, credits: 500 },
-  Business: { price: 250, credits: 5000 },
-};
-const PaypalController = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
-    const { planId } = req.body;
-    const plan = plans[planId];
-    if (!plan) return res.status(400).json({ message: "Invalid plan" });
+    const { plan } = req.body;
 
-    const auth = Buffer.from(
-      process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
-    ).toString("base64");
+    if (!plans[plan]) {
+      return res.status(400).json({ error: "Invalid plan selected" });
+    }
 
-    const { data } = await axios.post(
-      "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-      {
-        intent: "CAPTURE",
-        purchase_units: [
-          { amount: { currency_code: "USD", value: plan.price } },
-        ],
-      },
+    const accessToken = await getAccessToken();
+    const selectedPlan = plans[plan];
+
+    const response = await axios.post(
+      `${process.env.PAYPAL_BASEURL}/v2/checkout/orders`,
       {
         headers: {
-          Authorization: `Basic ${auth}`,
           "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-      }
+        json: {
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: selectedPlan.price,
+                breakdown: {
+                  item_total: {
+                    currency_code: "USD",
+                    value: selectedPlan.price,
+                  },
+                },
+              },
+              items: [
+                {
+                  name: selectedPlan.name,
+                  quantity: "1",
+                  unit_amount: {
+                    currency_code: "USD",
+                    value: selectedPlan.price,
+                  },
+                },
+              ],
+            },
+          ],
+          payment_source: {
+            paypal: {
+              experience_context: {
+                payment_method_preference: "IMMEDIATE_PAYMENT_REQUIRED",
+                payment_method_selected: "PAYPAL",
+                brand_name: "imagify",
+                shipping_preference: "NO_SHIPPING",
+                locale: "en-US",
+                user_action: "PAY_NOW",
+                return_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
+                cancel_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
+              },
+            },
+          },
+        },
+        responseType: "json",
+      },
     );
-
-    res.json({ orderId: data.id });
-  } catch (err) {
-    res.status(500).json({ message: "Error creating PayPal order" });
+    console.log(response.body);
+    const orderId = response.body?.id;
+    return res.status(200).json({
+      message: "Order created successfully",
+      orderID: response.body.id,
+      links: response.body.links,
+    });
+  } catch (error) {
+    console.error(
+      "PayPal Order Error:",
+      error?.response?.body || error.message,
+    );
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+export const capturePayment = async (req, res) => {
+  try {
+    const accessToken = await getAccessToken();
+    const { paymentid } = req.params;
+    const { plan } = req.body;
+    const { userId } = req.userId;
 
-export default PaypalController;
+    const response = await axios.post(
+      `${process.env.PAYPAL_BASEURL}/v2/checkout/orders/${paymentid}/capture`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        responseType: "json",
+      },
+    );
+
+    const paymentData = response.body;
+    console.log(paymentData);
+
+    if (paymentData.status === "COMPLETED") {
+      const planCredits = plans[plan]?.credits || 0;
+
+      console.log("✅ planCredits:", planCredits);
+      const user = await userModel.findById(userId);
+
+      console.log("✅ User before update:", user);
+      console.log("Fetched user:", user);
+      if (!user) return res.status(404).json({ error: "User not found" });
+      user.creditBalance += planCredits;
+      await user.save();
+
+      return res.status(200).json({ success: true, user, paymentData });
+    }
+
+    return res.status(409).json({
+      success: false,
+      message: "Payment not completed",
+      paymentData,
+    });
+  } catch (error) {
+    console.error("❌ Capture error:", error.response?.body || error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

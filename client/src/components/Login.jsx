@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState("Login");
-  const { setShowLogin, backendUrl, setUser, setToken } =
-    useContext(AppContext);
+  const { setShowLogin, setUser, setToken } = useContext(AppContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,8 +16,9 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+      const API = import.meta.env.VITE_API_URL;
       if (state === "Login") {
-        const { data } = await axios.post(backendUrl + "/api/user/login", {
+        const { data } = await axios.post(`${API}/user/login`, {
           email,
           password,
         });
@@ -29,10 +29,10 @@ const Login = () => {
           localStorage.setItem("token", data.token);
           setShowLogin(false);
         } else {
-          toast.error(error.message);
+          toast.error(data.message);
         }
       } else {
-        const { data } = await axios.post(backendUrl + "/api/user/register", {
+        const { data } = await axios.post(`${API}/user/register`, {
           name,
           email,
           password,
@@ -61,7 +61,7 @@ const Login = () => {
 
   return (
     <div className="fixed  top-0 left-0 right-0 bottom-0 backdrop-blur-sm bg-black/30 flex justify-center items-center">
-      <form
+      <motion.form
         onSubmit={onSubmitHandler}
         initial={{ opacity: 0.2, y: 50 }}
         transition={{ duration: 0.3 }}
@@ -143,7 +143,7 @@ const Login = () => {
           alt=""
           className="top-5 right-5 absolute cursor-pointer"
         />
-      </form>
+      </motion.form>
     </div>
   );
 };
