@@ -38,6 +38,15 @@ const BuyCredit = () => {
         <h1 className="text-3xl  font-medium mb-6 sm:mb-10 text-center">
           Choose the plan
         </h1>
+        <div className="text-center text-sm text-gray-500 mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+          🧪 Demo mode — use PayPal sandbox credentials to test payments
+          <br />
+          Email:{" "}
+          <span className="font-mono">
+            sb-u47yvf44906907@personal.example.com
+          </span>{" "}
+          · Password: your actual sandbox buyer password
+        </div>
         {!showLogin && (
           <div className="flex flex-wrap justify-center gap-6 text-left">
             {plans.map((item, index) => (
