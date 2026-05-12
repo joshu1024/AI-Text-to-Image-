@@ -1,6 +1,30 @@
 import plans from "../plans/plans.js";
 import axios from "axios";
 
+const getAccessToken = async () => {
+  try {
+    const basicAuth = Buffer.from(
+      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`,
+    ).toString("base64");
+
+    const response = await axios.post(
+      `${process.env.PAYPAL_BASEURL}/v1/oauth2/token`,
+      new URLSearchParams({ grant_type: "client_credentials" }),
+      {
+        headers: {
+          Authorization: `Basic ${basicAuth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+
+    const newAccessToken = response.data.access_token;
+    return newAccessToken;
+  } catch (err) {
+    throw new Error("PayPal auth failed");
+  }
+};
+
 export const createOrder = async (req, res) => {
   try {
     const { plan } = req.body;
@@ -15,60 +39,58 @@ export const createOrder = async (req, res) => {
     const response = await axios.post(
       `${process.env.PAYPAL_BASEURL}/v2/checkout/orders`,
       {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: selectedPlan.price,
+              breakdown: {
+                item_total: {
+                  currency_code: "USD",
+                  value: selectedPlan.price,
+                },
+              },
+            },
+            items: [
+              {
+                name: selectedPlan.name,
+                quantity: "1",
+                unit_amount: {
+                  currency_code: "USD",
+                  value: selectedPlan.price,
+                },
+              },
+            ],
+          },
+        ],
+        payment_source: {
+          paypal: {
+            experience_context: {
+              payment_method_preference: "IMMEDIATE_PAYMENT_REQUIRED",
+              payment_method_selected: "PAYPAL",
+              brand_name: "imagify",
+              shipping_preference: "NO_SHIPPING",
+              locale: "en-US",
+              user_action: "PAY_NOW",
+              return_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
+              cancel_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
+            },
+          },
+        },
+      },
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        json: {
-          intent: "CAPTURE",
-          purchase_units: [
-            {
-              amount: {
-                currency_code: "USD",
-                value: selectedPlan.price,
-                breakdown: {
-                  item_total: {
-                    currency_code: "USD",
-                    value: selectedPlan.price,
-                  },
-                },
-              },
-              items: [
-                {
-                  name: selectedPlan.name,
-                  quantity: "1",
-                  unit_amount: {
-                    currency_code: "USD",
-                    value: selectedPlan.price,
-                  },
-                },
-              ],
-            },
-          ],
-          payment_source: {
-            paypal: {
-              experience_context: {
-                payment_method_preference: "IMMEDIATE_PAYMENT_REQUIRED",
-                payment_method_selected: "PAYPAL",
-                brand_name: "imagify",
-                shipping_preference: "NO_SHIPPING",
-                locale: "en-US",
-                user_action: "PAY_NOW",
-                return_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
-                cancel_url: `${process.env.PAYPAL_REDIRECT_BASE_URL}/complete-payment`,
-              },
-            },
-          },
-        },
-        responseType: "json",
       },
     );
-    console.log(response.body);
-    const orderId = response.body?.id;
+    const orderId = response.data?.id;
     return res.status(200).json({
       message: "Order created successfully",
-      orderID: response.body.id,
-      links: response.body.links,
+      orderID: response.data.id,
+      links: response.data.links,
     });
   } catch (error) {
     console.error(
@@ -78,35 +100,32 @@ export const createOrder = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const capturePayment = async (req, res) => {
   try {
     const accessToken = await getAccessToken();
     const { paymentid } = req.params;
     const { plan } = req.body;
-    const { userId } = req.userId;
+    const userId = req.userId;
 
     const response = await axios.post(
       `${process.env.PAYPAL_BASEURL}/v2/checkout/orders/${paymentid}/capture`,
+      {},
       {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        responseType: "json",
       },
     );
 
-    const paymentData = response.body;
-    console.log(paymentData);
+    const paymentData = response.data;
 
     if (paymentData.status === "COMPLETED") {
       const planCredits = plans[plan]?.credits || 0;
 
-      console.log("✅ planCredits:", planCredits);
       const user = await userModel.findById(userId);
 
-      console.log("✅ User before update:", user);
-      console.log("Fetched user:", user);
       if (!user) return res.status(404).json({ error: "User not found" });
       user.creditBalance += planCredits;
       await user.save();

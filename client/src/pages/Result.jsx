@@ -17,7 +17,6 @@ const Result = () => {
     setLoading(true);
     if (input) {
       const image = await generateImage(input);
-      console.log("Generated image from backend:", image);
       if (image) {
         setIsImageLoaded(true);
         setImage(image);

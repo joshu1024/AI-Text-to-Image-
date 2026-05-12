@@ -21,10 +21,9 @@ export const AppContextProvider = (props) => {
       });
       if (data.success) {
         setCredit(data.credits);
-        setUser(data.user); // This gives you user._id
+        setUser(data.user);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -34,7 +33,7 @@ export const AppContextProvider = (props) => {
       const { data } = await axios.post(
         backendUrl + "/api/image/generate-image",
         { prompt },
-        { headers: { token } }
+        { headers: { token } },
       );
 
       if (data.success) {

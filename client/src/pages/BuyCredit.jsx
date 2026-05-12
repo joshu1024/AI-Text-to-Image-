@@ -19,8 +19,7 @@ const BuyCredit = () => {
   const navigate = useNavigate();
 
   const onError = (error) => {
-    console.log("PayPal error", error);
-    window.location.href = "/complete-payment";
+    window.location.href = "/cancel-payment";
   };
 
   return (
@@ -65,6 +64,7 @@ const BuyCredit = () => {
                 <div className="w-full mt-8 min-w-52">
                   {user ? (
                     <PayPalButtons
+                      onError={onError}
                       style={styles}
                       fundingSource="paypal"
                       createOrder={(data, actions) => {
@@ -80,8 +80,6 @@ const BuyCredit = () => {
                         });
                       }}
                       onApprove={async (data, actions) => {
-                        // const details = await actions.order.capture();
-                        // Send `details`, `userId`, and `plan` to your backend to credit user
                         try {
                           const response = await fetch(
                             `/paypal/capturepayment/${data.orderID}`,
