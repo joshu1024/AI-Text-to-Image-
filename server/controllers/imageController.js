@@ -10,7 +10,7 @@ export const generateImage = async (req, res) => {
     if (!user || !prompt) {
       return res.json({ success: false, message: "No inputs provided" });
     }
-    if (user.creditBalance === 0 || user.creditBalance <= 0) {
+    if (user.creditBalance <= 0) {
       return res.json({
         success: false,
         creditBalance: user.creditBalance,
@@ -28,25 +28,25 @@ export const generateImage = async (req, res) => {
           ...formData.getHeaders(),
           "x-api-key": process.env.CLIPDROP_API,
         },
-        responseType: "arraybuffer", // lowercase 'b'
+        responseType: "arraybuffer",
       },
     );
-    //1:06:10
     const base64Image = Buffer.from(data, "binary").toString("base64");
     const resultImage = `data:image/png;base64,${base64Image}`;
 
-    await userModel.findByIdAndUpdate(user._id, {
-      creditBalance: user.creditBalance - 1,
-    });
+    const updatedUser = await userModel.findByIdAndUpdate(
+      user._id,
+      { $inc: { creditBalance: -1 } },
+      { new: true },
+    );
 
     res.json({
       success: true,
       message: "Image generated",
-      creditBalance: user.creditBalance - 1,
+      creditBalance: updatedUser.creditBalance,
       resultImage,
     });
   } catch (error) {
-    console.error(error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

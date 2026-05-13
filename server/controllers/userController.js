@@ -7,7 +7,7 @@ export const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!email || !password || !name) {
-      res
+      return res
         .status(400)
         .json({ message: "kindly provide the details", success: false });
     }
@@ -63,7 +63,7 @@ export const loginUser = async (req, res) => {
         .json({ message: "Credentials dont match ", success: false });
     }
   } catch (error) {
-    res.status(404).json({ message: "Wrong credentials ", success: false });
+    res.status(500).json({ message: "Wrong credentials ", success: false });
   }
 };
 

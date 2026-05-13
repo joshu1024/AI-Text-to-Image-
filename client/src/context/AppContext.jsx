@@ -16,7 +16,7 @@ export const AppContextProvider = (props) => {
 
   const loadCreditsData = async () => {
     try {
-      const { data } = await axios.get(backendUrl + "/api/user/credits", {
+      const { data } = await axios.get(`${backendUrl}/api/user/credits`, {
         headers: { token },
       });
       if (data.success) {
@@ -42,7 +42,7 @@ export const AppContextProvider = (props) => {
       } else {
         toast.error(data.message);
         loadCreditsData();
-        if (data.creditBalance === 0) {
+        if (data.creditBalance <= 0) {
           navigate("/buy");
         }
         return null;

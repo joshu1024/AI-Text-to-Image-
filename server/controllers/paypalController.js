@@ -122,21 +122,39 @@ export const capturePayment = async (req, res) => {
     const paymentData = response.data;
 
     if (paymentData.status === "COMPLETED") {
-      const planCredits = plans[plan]?.credits || 0;
+      const planCredits = plans[plan]?.credits;
 
-      const user = await userModel.findById(userId);
+      if (!planCredits) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid plan — no credits awarded. Contact support.",
+        });
+      }
+
+      const user = await userModel.findOneAndUpdate(
+        { _id: userId, creditBalance: { $gt: -1 } },
+        { $inc: { creditBalance: planCredits } },
+        { new: true },
+      );
 
       if (!user) return res.status(404).json({ error: "User not found" });
-      user.creditBalance += planCredits;
-      await user.save();
-
       return res.status(200).json({ success: true, user, paymentData });
     }
 
+    // Handle every other status explicitly
+    const statusMessages = {
+      CREATED: "Order was created but not approved yet.",
+      SAVED: "Order was saved but not completed.",
+      APPROVED: "Order approved but not captured — try again.",
+      VOIDED: "Order was cancelled.",
+      PAYER_ACTION_REQUIRED: "Additional action needed from the buyer.",
+    };
+
     return res.status(409).json({
       success: false,
-      message: "Payment not completed",
-      paymentData,
+      message:
+        statusMessages[paymentData.status] || "Payment did not complete.",
+      status: paymentData.status,
     });
   } catch (error) {
     console.error("❌ Capture error:", error.response?.body || error.message);

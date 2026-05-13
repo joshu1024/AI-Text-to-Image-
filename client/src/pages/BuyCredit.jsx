@@ -87,7 +87,6 @@ const BuyCredit = () => {
                               method: "POST",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({
-                                userId: user._id,
                                 plan: item.id.toLowerCase(),
                               }),
                             },
